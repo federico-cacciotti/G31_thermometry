@@ -7,7 +7,8 @@ class Thermometer():
         # check the existance of the selected thermometer
         self.model = Path(model)
         self.serial_no = Path(serial_no)
-        path_to_calibration = self.model / self.serial_no
+        path_to_calibration = Path(__file__).parent.absolute() / self.model / self.serial_no
+        
         if not path_to_calibration.exists():
             print('Cannot find the selected thermometer.')
             return
@@ -128,6 +129,3 @@ class Thermometer():
         ax0.set_xscale('log')
         
         plt.show()
-        
-DT670 = Thermometer(model='DT670', serial_no='D6068043')
-DT670.plotCalibrationCurve()
