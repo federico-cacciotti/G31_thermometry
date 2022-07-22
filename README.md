@@ -12,7 +12,7 @@ For now it is possible to add only Lakeshore thermometer calibration files, just
 Download the package and place it in the same directory of your Python script.
 
 In this example we define a DT670 thermometer with serial number D6068043 and plot its calibration curve.
-```
+```Python
 import G31_thermometry as G31t
 
 DT670 = G31t.Thermometer(model='DT670', serial_no='D6068043')
@@ -21,7 +21,7 @@ DT670.plotCalibrationCurve()
 The calibration curve is shown below.
 
 With the following code instead we want to convert measured voltages into temperatures.
-```
+```Python
 import G31_thermometry as G31t
 
 DT670 = G31t.Thermometer(model='DT670', serial_no='D6068043')
