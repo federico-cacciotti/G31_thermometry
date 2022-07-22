@@ -23,6 +23,7 @@ The calibration curve is shown below.
 With the following code instead we want to convert measured voltages into temperatures.
 ```Python
 import G31_thermometry as G31t
+import numpy as np
 
 DT670 = G31t.Thermometer(model='DT670', serial_no='D6068043')
 
