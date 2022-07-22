@@ -1,5 +1,5 @@
 # G31_thermometry
-A Python3 package useful to convert thermometer voltage to temperature.
+A Python package useful to convert thermometer voltage to temperature for the G31 Cosmology Group at La Sapienza University of Rome.
 
 # Supported thermometers
 Lakeshore DT670:
