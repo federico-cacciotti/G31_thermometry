@@ -1,5 +1,5 @@
 # G31_thermometry
-A Python package useful to convert thermometer voltage to temperature for the G31 Cosmology Group at La Sapienza University of Rome.
+A Python package useful to convert thermometer readout voltage to temperature for the G31 Cosmology Group at La Sapienza University of Rome.
 
 # Supported thermometers
 - Lakeshore DT670 D6068043
@@ -7,9 +7,13 @@ A Python package useful to convert thermometer voltage to temperature for the G3
 # How to add new thermometers
 For now it is possible to add only Lakeshore thermometer calibration files, just go to [Lakeshore website](https://www.lakeshore.com/products/categories/temperature-products/cryogenic-temperature-sensors), insert the serial number of a thermometer and download the zip file. Extract the zip file and copy/paste the extracted directory as a subfolder of thermometer model directory.
 
-# Example
-Download the package and place it in the same directory of your Python script.
+# How to install
+Just open terminal and type
+```
+pip install G31-thermometry
+```
 
+# Example
 In this example we define a DT670 thermometer with serial number D6068043 and plot its calibration curve.
 ```Python
 import G31_thermometry as G31t
