@@ -8,8 +8,8 @@ A Python package useful to convert thermometer readout voltage to temperature fo
 For now it is possible to add only Lakeshore thermometer calibration files, just go to [Lakeshore website](https://www.lakeshore.com/products/categories/temperature-products/cryogenic-temperature-sensors), insert the serial number of a thermometer and download the zip file. Extract the zip file and copy/paste the extracted directory as a subfolder of thermometer model directory.
 
 # How to install
-Just open terminal and type
-```
+From ipython:
+```Python
 pip install G31-thermometry
 ```
 
