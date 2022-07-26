@@ -22,7 +22,8 @@ DT670 = G31t.Thermometer(model='DT670', serial_no='D6068043')
 DT670.plotCalibrationCurve()
 ```
 The calibration curve is shown below.
-![DT670_D6068043_calibration_curve](https://github.com/federico-cacciotti/G31_thermometry/blob/main/DT670_D6068043.png)
+<br/>
+<img src="https://github.com/federico-cacciotti/G31_thermometry/blob/main/DT670_D6068043.png" alt="DT670_D6068043_calibration_curve" width="500"/>
 
 With the following code instead we want to convert measured voltages into temperatures.
 ```Python
