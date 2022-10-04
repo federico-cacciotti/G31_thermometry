@@ -1,7 +1,7 @@
 Metadata-Version: 2.1
 Name: G31-thermometry
-Version: 1.0.0
-Summary: A Python package to convert thermometer voltage to temperature
+Version: 1.0.1
+Summary: A Python package useful to convert thermometer voltage to temperature
 Author-email: federico-cacciotti <federico.cacciotti@roma1.infn.it>
 Project-URL: Homepage, https://github.com/federico-cacciotti/G31_thermometry
 Classifier: Programming Language :: Python :: 3
@@ -11,7 +11,7 @@ Requires-Python: >=3.10.5
 Description-Content-Type: text/markdown
 
 # G31_thermometry
-A Python package useful to convert thermometer voltage to temperature for the G31 Cosmology Group at La Sapienza University of Rome.
+A Python package useful to convert thermometer readout voltage to temperature for the G31 Cosmology Group at La Sapienza University of Rome.
 
 # Supported thermometers
 - Lakeshore DT670 D6068043
@@ -19,9 +19,13 @@ A Python package useful to convert thermometer voltage to temperature for the G3
 # How to add new thermometers
 For now it is possible to add only Lakeshore thermometer calibration files, just go to [Lakeshore website](https://www.lakeshore.com/products/categories/temperature-products/cryogenic-temperature-sensors), insert the serial number of a thermometer and download the zip file. Extract the zip file and copy/paste the extracted directory as a subfolder of thermometer model directory.
 
-# Example
-Download the package and place it in the same directory of your Python script.
+# How to install
+From ipython:
+```Python
+pip install G31-thermometry
+```
 
+# Example
 In this example we define a DT670 thermometer with serial number D6068043 and plot its calibration curve.
 ```Python
 import G31_thermometry as G31t
@@ -30,6 +34,8 @@ DT670 = G31t.Thermometer(model='DT670', serial_no='D6068043')
 DT670.plotCalibrationCurve()
 ```
 The calibration curve is shown below.
+<br/>
+<img src="https://github.com/federico-cacciotti/G31_thermometry/blob/main/DT670_D6068043.png" alt="DT670_D6068043_calibration_curve" width="500"/>
 
 With the following code instead we want to convert measured voltages into temperatures.
 ```Python
