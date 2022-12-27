@@ -3,7 +3,7 @@ import numpy as np
 
 class Thermistor():
     
-    def __init__(self, model, serial_no=None):
+    def __init__(self, model, serial_no=None, label=None):
         # check the existance of the selected thermometer
         self.model = Path(model)
         
@@ -14,51 +14,46 @@ class Thermistor():
             self.serial_no = None
             path_to_calibration = Path(__file__).parent.absolute() / self.model
         
+        if label == None:
+            self.label = self.model
+        else:
+            self.label = label
+        
         if not path_to_calibration.exists():
             print('Cannot find the selected thermometer.')
             return
         
         calibration_file = path_to_calibration / (self.model.as_posix()+'.txt')
         calib_temperature, calib_voltage = np.loadtxt(calibration_file, unpack=True)
-        self.calibration_data = {'temperature': calib_temperature, 'voltage': calib_voltage}
+        self.calibration_data = {'temperature': calib_temperature, 'resistance': calib_voltage}
         
-    def readValue(self, file):
-        val = file.readline()
-        val = val.split(sep=None)
-        try:
-            val = int(val[-1])
-            return val
-        except:
-            try: 
-                val = float(val[-1])
-                return val
-            except:
-                return val[-1]
             
-    def temperature(self, voltage):
-        voltage = np.asarray(voltage)
+    def temperature(self, resistance):
         
-        V_min_cal = np.min(self.calibration_data['voltage'])
-        V_max_cal = np.max(self.calibration_data['voltage'])
+        R_calib_min = self.calibration_data['resistance'].min()
+        R_calib_max = self.calibration_data['resistance'].max()
         
-        if np.min(voltage) < V_min_cal:
-            print("There are values lower than the minimum allowed [{:f}]...".format(V_min_cal))
-            voltage = voltage[voltage>=V_min_cal]
-                
-        if np.max(voltage) > V_max_cal:
-            print("There are values higher than the minimum allowed [{:f}]...".format(V_max_cal))
-            voltage = voltage[voltage<=V_max_cal]
+        # replace with nan values outside the calibrated range
+        resistance = np.asarray(resistance)
+        if resistance.size == 1:
+            resistance = [resistance]
+        resistance = np.asarray([np.nan if v_i < R_calib_min or v_i > R_calib_max else v_i for v_i in resistance])
         
-    
+        if any(np.isnan(resistance)):
+            print(self.label+": one ore more values are outside of the calibration range. Replaced with NaN values.")
+        
         # linear interpolation
         from scipy.interpolate import interp1d
-        interpolation = interp1d(self.calibration_data['voltage'], self.calibration_data['temperature'], kind='linear')
-        temperature = interpolation(voltage)
+        interpolation = interp1d(self.calibration_data['resistance'], self.calibration_data['temperature'], kind='linear')
+        temperature = interpolation(resistance)
                 
-        return temperature
+        if temperature.size == 1:
+            return temperature.item()
+        else:
+            return temperature
         
     def plotCalibrationCurve(self, ax=None, linestyle='solid', color='black', linewidth=1, label=None):
-        V = self.calibration_data['voltage']
+        R = self.calibration_data['resistance']
         T = self.calibration_data['temperature']
         
         import matplotlib.pyplot as plt
@@ -72,7 +67,7 @@ class Thermistor():
             else:
                 label = self.model.as_posix()+' '+self.serial_no.as_posix()
                 
-        ax.plot(T, V, linestyle=linestyle, color=color, linewidth=linewidth, label=label)
+        ax.plot(T, R, linestyle=linestyle, color=color, linewidth=linewidth, label=label)
         ax.set_xlabel('Temperature [K]')
         ax.set_ylabel('Resistance [Ohm]')
         ax.grid(alpha=0.5)

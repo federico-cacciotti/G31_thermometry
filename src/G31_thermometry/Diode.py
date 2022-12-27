@@ -3,7 +3,7 @@ import numpy as np
 
 class Diode():
     
-    def __init__(self, model, serial_no=None):
+    def __init__(self, model, serial_no=None, label=None):
         # check the existance of the selected thermometer
         self.model = Path(model)
         
@@ -13,6 +13,11 @@ class Diode():
         else:
             self.serial_no = None
             path_to_calibration = Path(__file__).parent.absolute() / self.model
+        
+        if label == None:
+            self.label = self.model
+        else:
+            self.label = label
         
         if not path_to_calibration.exists():
             print('Cannot find the selected thermometer.')
@@ -72,42 +77,19 @@ class Diode():
             self.calibration_data = {'temperature': calib_temperature, 'voltage': calib_voltage}
         except:
             pass
-        
-    def readValue(self, file):
-        val = file.readline()
-        val = val.split(sep=None)
-        try:
-            val = int(val[-1])
-            return val
-        except:
-            try: 
-                val = float(val[-1])
-                return val
-            except:
-                return val[-1]
             
     def temperature(self, voltage):
+        V_calib_min = self.calibration_data['voltage'].min()
+        V_calib_max = self.calibration_data['voltage'].max()
+        
+        # replace with nan values outside the calibrated range
         voltage = np.asarray(voltage)
+        if voltage.size == 1:
+            voltage = [voltage]
+        voltage = np.asarray([np.nan if v_i < V_calib_min or v_i > V_calib_max else v_i for v_i in voltage])
         
-        try:
-            V_min_cal = np.min(self.calibration_data['V_lower'])
-            V_max_cal = np.max(self.calibration_data['V_upper'])
-        except:
-            pass
-        
-        try:
-            V_min_cal = np.min(self.calibration_data['voltage'])
-            V_max_cal = np.max(self.calibration_data['voltage'])
-        except:
-            pass
-        
-        if np.min(voltage) < V_min_cal:
-            print("There are values lower than the minimum allowed [{:f}]...".format(V_min_cal))
-            voltage = voltage[voltage>=V_min_cal]
-                
-        if np.max(voltage) > V_max_cal:
-            print("There are values higher than the minimum allowed [{:f}]...".format(V_max_cal))
-            voltage = voltage[voltage<=V_max_cal]
+        if any(np.isnan(voltage)):
+            print(self.label+": one ore more values are outside of the calibration range. Replaced with NaN values.")
         
         
         try:
@@ -137,8 +119,11 @@ class Diode():
             temperature = interpolation(voltage)
         except:
             pass
-                
-        return temperature
+        
+        if temperature.size == 1:
+            return temperature.item()
+        else:
+            return temperature
     
     def __k__(self, Z, ZL, ZU):
         return ((Z-ZL)-(ZU-Z))/(ZU-ZL)
