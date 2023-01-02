@@ -13,6 +13,8 @@ class Thermistor():
         else:
             self.serial_no = None
             path_to_calibration = Path(__file__).parent.absolute() / self.model
+            
+        print("Searching thermometer data at", path_to_calibration)
         
         if label == None:
             self.label = self.model
