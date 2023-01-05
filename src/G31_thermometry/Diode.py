@@ -17,7 +17,10 @@ class Diode():
         print("Searching thermometer data at", path_to_calibration)
         
         if label == None:
-            self.label = self.model
+            if serial_no != None:
+                self.label = self.model.as_posix() + '/' + self.serial_no.as_posix()
+            else:
+                self.label = self.model.as_posix()
         else:
             self.label = label
         
@@ -76,6 +79,10 @@ class Diode():
         try:
             calibration_file = path_to_calibration / (self.model.as_posix()+'.txt')
             calib_temperature, calib_voltage = np.loadtxt(calibration_file, unpack=True)
+            # sometimes the calibration data needs to be sorted with respect to the temperature
+            new_order = np.lexsort([calib_temperature, calib_voltage])
+            calib_temperature = calib_temperature[new_order]
+            calib_voltage = calib_voltage[new_order]
             self.calibration_data = {'temperature': calib_temperature, 'voltage': calib_voltage}
         except:
             pass
@@ -153,15 +160,12 @@ class Diode():
             
         if label == None:
             if self.serial_no == None:
-                label = self.model.as_posix()
-            else:
-                label = self.model.as_posix()+' '+self.serial_no.as_posix()
+                label = self.label
                 
-        ax.plot(T, V, linestyle=linestyle, color=color, linewidth=linewidth, label=label)
-        ax.set_xlabel('Temperature [K]')
-        ax.set_ylabel('Voltage [V]')
+        ax.plot(V, T, linestyle=linestyle, color=color, linewidth=linewidth, label=label)
+        ax.set_ylabel('Temperature [K]')
+        ax.set_xlabel('Voltage [V]')
         ax.grid(alpha=0.5)
-        #ax.set_xscale('log')
         ax.legend(loc='best')
         
         plt.show()

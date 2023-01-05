@@ -17,7 +17,10 @@ class Thermistor():
         print("Searching thermometer data at", path_to_calibration)
         
         if label == None:
-            self.label = self.model
+            if serial_no != None:
+                self.label = self.model.as_posix() + '/' + self.serial_no.as_posix()
+            else:
+                self.label = self.model.as_posix()
         else:
             self.label = label
         
@@ -26,8 +29,12 @@ class Thermistor():
             return
         
         calibration_file = path_to_calibration / (self.model.as_posix()+'.txt')
-        calib_temperature, calib_voltage = np.loadtxt(calibration_file, unpack=True)
-        self.calibration_data = {'temperature': calib_temperature, 'resistance': calib_voltage}
+        calib_temperature, calib_resistance = np.loadtxt(calibration_file, unpack=True)
+        # sometimes the calibration data needs to be sorted with respect to the temperature
+        new_order = np.lexsort([calib_temperature, calib_resistance])
+        calib_temperature = calib_temperature[new_order]
+        calib_resistance = calib_resistance[new_order]
+        self.calibration_data = {'temperature': calib_temperature, 'resistance': calib_resistance}
         
             
     def temperature(self, resistance):
@@ -65,13 +72,11 @@ class Thermistor():
             
         if label == None:
             if self.serial_no == None:
-                label = self.model.as_posix()
-            else:
-                label = self.model.as_posix()+' '+self.serial_no.as_posix()
+                label = self.label
                 
-        ax.plot(T, R, linestyle=linestyle, color=color, linewidth=linewidth, label=label)
-        ax.set_xlabel('Temperature [K]')
-        ax.set_ylabel('Resistance [Ohm]')
+        ax.plot(R, T, linestyle=linestyle, color=color, linewidth=linewidth, label=label)
+        ax.set_ylabel('Temperature [K]')
+        ax.set_xlabel('Resistance [Ohm]')
         ax.grid(alpha=0.5)
         ax.set_yscale('log')
         ax.set_xscale('log')
