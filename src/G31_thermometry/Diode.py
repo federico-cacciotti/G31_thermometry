@@ -29,52 +29,54 @@ class Diode():
             return
         
         # open the calibration file
-        try:
-            calibration_file = path_to_calibration / (self.serial_no.as_posix()+'.cof')
-            cal_file = open(calibration_file, 'r')
+        #try:
+        print("Opening calibration files...")
+        calibration_file = path_to_calibration / (self.serial_no.as_posix()+'.cof')
+        cal_file = open(calibration_file, 'r')
+        
+        fit_range = []
+        fit_type = []
+        fit_order = []
+        Z_lower = []
+        Z_upper = []
+        V_lower = []
+        V_upper = []
+        cheb_coeffs = []
+        
+        # read the number of fit ranges
+        number_of_fit_ranges = self.readValue(cal_file)
+        self.calibration_data = {'number_of_fit_ranges': number_of_fit_ranges}
+        
+        for n_fit in range(number_of_fit_ranges):
+            fit_range.append(self.readValue(cal_file))
+            fit_type.append(self.readValue(cal_file))
+            fit_order.append(self.readValue(cal_file))
+            Z_lower.append(self.readValue(cal_file))
+            Z_upper.append(self.readValue(cal_file))
             
-            fit_range = []
-            fit_type = []
-            fit_order = []
-            Z_lower = []
-            Z_upper = []
-            V_lower = []
-            V_upper = []
-            cheb_coeffs = []
+            # voltage limits
+            V_lower.append(self.readValue(cal_file))
+            V_upper.append(self.readValue(cal_file))
             
-            # read the number of fit ranges
-            number_of_fit_ranges = self.readValue(cal_file)
-            self.calibration_data = {'number_of_fit_ranges': number_of_fit_ranges}
-            
-            for n_fit in range(number_of_fit_ranges):
-                fit_range.append(self.readValue(cal_file))
-                fit_type.append(self.readValue(cal_file))
-                fit_order.append(self.readValue(cal_file))
-                Z_lower.append(self.readValue(cal_file))
-                Z_upper.append(self.readValue(cal_file))
-                
-                # voltage limits
-                V_lower.append(self.readValue(cal_file))
-                V_upper.append(self.readValue(cal_file))
-                
-                # chebichev coefficients
-                c = []
-                for i in range(fit_order[-1]+1):
-                    c.append(self.readValue(cal_file))
-                cheb_coeffs.append(c)
-            
-            self.calibration_data['fit_range'] = fit_range
-            self.calibration_data['fit_type'] = fit_type
-            self.calibration_data['fit_order'] = fit_order
-            self.calibration_data['Z_lower'] = Z_lower
-            self.calibration_data['Z_upper'] = Z_upper
-            self.calibration_data['V_upper'] = V_upper
-            self.calibration_data['V_lower'] = V_lower
-            self.calibration_data['cheb_coeffs'] = cheb_coeffs
-            
-            cal_file.close()
-        except:
-            pass
+            # chebichev coefficients
+            c = []
+            for i in range(fit_order[-1]+1):
+                c.append(self.readValue(cal_file))
+            cheb_coeffs.append(c)
+        
+        self.calibration_data['fit_range'] = fit_range
+        self.calibration_data['fit_type'] = fit_type
+        self.calibration_data['fit_order'] = fit_order
+        self.calibration_data['Z_lower'] = Z_lower
+        self.calibration_data['Z_upper'] = Z_upper
+        self.calibration_data['V_upper'] = V_upper
+        self.calibration_data['V_lower'] = V_lower
+        self.calibration_data['cheb_coeffs'] = cheb_coeffs
+        
+        cal_file.close()
+        #except:
+        #    print("Calibration files not found!")
+        #    pass
         
         try:
             calibration_file = path_to_calibration / (self.model.as_posix()+'.txt')
@@ -86,10 +88,28 @@ class Diode():
             self.calibration_data = {'temperature': calib_temperature, 'voltage': calib_voltage}
         except:
             pass
+        
+    def readValue(self, file):
+        val = file.readline()
+        val = val.split(sep=None)
+        try:
+            val = int(val[-1])
+            return val
+        except:
+            try: 
+                val = float(val[-1])
+                return val
+            except:
+                return val[-1]
             
     def temperature(self, voltage):
-        V_calib_min = self.calibration_data['voltage'].min()
-        V_calib_max = self.calibration_data['voltage'].max()
+        try:
+            V_calib_min = self.calibration_data['voltage'].min()
+            V_calib_max = self.calibration_data['voltage'].max()
+        except:
+            V_calib_min = np.min(self.calibration_data['V_lower'])
+            V_calib_max = np.max(self.calibration_data['V_upper'])
+            pass
         
         # replace with nan values outside the calibrated range
         voltage = np.asarray(voltage)
@@ -144,13 +164,13 @@ class Diode():
             V_max = np.max(self.calibration_data['V_upper'])
             V = np.linspace(V_min, V_max, num=500)
             T = self.temperature(V)
-        except:
+        except KeyError:
             pass
         
         try:
             V = self.calibration_data['voltage']
             T = self.calibration_data['temperature']
-        except:
+        except KeyError:
             pass
         
         import matplotlib.pyplot as plt
@@ -161,7 +181,7 @@ class Diode():
         if label == None:
             if self.serial_no == None:
                 label = self.label
-                
+            
         ax.plot(V, T, linestyle=linestyle, color=color, linewidth=linewidth, label=label)
         ax.set_ylabel('Temperature [K]')
         ax.set_xlabel('Voltage [V]')
