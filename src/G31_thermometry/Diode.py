@@ -29,54 +29,54 @@ class Diode():
             return
         
         # open the calibration file
-        #try:
-        print("Opening calibration files...")
-        calibration_file = path_to_calibration / (self.serial_no.as_posix()+'.cof')
-        cal_file = open(calibration_file, 'r')
-        
-        fit_range = []
-        fit_type = []
-        fit_order = []
-        Z_lower = []
-        Z_upper = []
-        V_lower = []
-        V_upper = []
-        cheb_coeffs = []
-        
-        # read the number of fit ranges
-        number_of_fit_ranges = self.readValue(cal_file)
-        self.calibration_data = {'number_of_fit_ranges': number_of_fit_ranges}
-        
-        for n_fit in range(number_of_fit_ranges):
-            fit_range.append(self.readValue(cal_file))
-            fit_type.append(self.readValue(cal_file))
-            fit_order.append(self.readValue(cal_file))
-            Z_lower.append(self.readValue(cal_file))
-            Z_upper.append(self.readValue(cal_file))
+        try:
+            print("Opening calibration files...")
+            calibration_file = path_to_calibration / (self.serial_no.as_posix()+'.cof')
+            cal_file = open(calibration_file, 'r')
             
-            # voltage limits
-            V_lower.append(self.readValue(cal_file))
-            V_upper.append(self.readValue(cal_file))
+            fit_range = []
+            fit_type = []
+            fit_order = []
+            Z_lower = []
+            Z_upper = []
+            V_lower = []
+            V_upper = []
+            cheb_coeffs = []
             
-            # chebichev coefficients
-            c = []
-            for i in range(fit_order[-1]+1):
-                c.append(self.readValue(cal_file))
-            cheb_coeffs.append(c)
-        
-        self.calibration_data['fit_range'] = fit_range
-        self.calibration_data['fit_type'] = fit_type
-        self.calibration_data['fit_order'] = fit_order
-        self.calibration_data['Z_lower'] = Z_lower
-        self.calibration_data['Z_upper'] = Z_upper
-        self.calibration_data['V_upper'] = V_upper
-        self.calibration_data['V_lower'] = V_lower
-        self.calibration_data['cheb_coeffs'] = cheb_coeffs
-        
-        cal_file.close()
-        #except:
-        #    print("Calibration files not found!")
-        #    pass
+            # read the number of fit ranges
+            number_of_fit_ranges = self.readValue(cal_file)
+            self.calibration_data = {'number_of_fit_ranges': number_of_fit_ranges}
+            
+            for n_fit in range(number_of_fit_ranges):
+                fit_range.append(self.readValue(cal_file))
+                fit_type.append(self.readValue(cal_file))
+                fit_order.append(self.readValue(cal_file))
+                Z_lower.append(self.readValue(cal_file))
+                Z_upper.append(self.readValue(cal_file))
+                
+                # voltage limits
+                V_lower.append(self.readValue(cal_file))
+                V_upper.append(self.readValue(cal_file))
+                
+                # chebichev coefficients
+                c = []
+                for i in range(fit_order[-1]+1):
+                    c.append(self.readValue(cal_file))
+                cheb_coeffs.append(c)
+            
+            self.calibration_data['fit_range'] = fit_range
+            self.calibration_data['fit_type'] = fit_type
+            self.calibration_data['fit_order'] = fit_order
+            self.calibration_data['Z_lower'] = Z_lower
+            self.calibration_data['Z_upper'] = Z_upper
+            self.calibration_data['V_upper'] = V_upper
+            self.calibration_data['V_lower'] = V_lower
+            self.calibration_data['cheb_coeffs'] = cheb_coeffs
+            
+            cal_file.close()
+        except:
+            print("Calibration files not found!")
+            pass
         
         try:
             calibration_file = path_to_calibration / (self.model.as_posix()+'.txt')
