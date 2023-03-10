@@ -61,14 +61,16 @@ class Thermistor():
         else:
             return temperature
         
-    def plotCalibrationCurve(self, ax=None, linestyle='solid', color='black', linewidth=1, label=None):
+    def plotCalibrationCurve(self, axis=None, linestyle='solid', color='black', linewidth=1, label=None):
         R = self.calibration_data['resistance']
         T = self.calibration_data['temperature']
         
         import matplotlib.pyplot as plt
-        if ax == None:
+        if axis == None:
             fig = plt.figure(figsize=(7,7))
             ax = fig.gca()
+        else:
+            ax = axis
             
         if label == None:
             if self.serial_no == None:
@@ -80,6 +82,7 @@ class Thermistor():
         ax.grid(alpha=0.5)
         ax.set_yscale('log')
         ax.set_xscale('log')
-        ax.legend(loc='best')
         
-        plt.show()
+        if axis == None:
+            ax.legend(loc='best')
+            plt.show()
