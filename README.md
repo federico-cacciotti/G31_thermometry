@@ -3,11 +3,13 @@ A Python package useful to convert thermometer readout voltage to temperature fo
 
 # Supported thermometers
 - Lakeshore DT670 D6068043
+- and many others :]
 
 # How to add new thermometers
-For now it is possible to add only Lakeshore thermometer calibration files, just go to [Lakeshore website](https://www.lakeshore.com/products/categories/temperature-products/cryogenic-temperature-sensors), insert the serial number of a thermometer and download the zip file. Extract the zip file and copy/paste the extracted directory as a subfolder of thermometer model directory.
+You can add Lakeshore thermometer calibration files, just go to [Lakeshore website](https://www.lakeshore.com/products/categories/temperature-products/cryogenic-temperature-sensors), insert the serial number of a thermometer and download the zip file. Extract the zip file and copy/paste the extracted directory in the same directory of the script. You can also add text calibration files.
 
 # How to install
+WARNING: this is deprecated. Download the latest version from github!
 From ipython:
 ```Python
 pip install G31-thermometry
