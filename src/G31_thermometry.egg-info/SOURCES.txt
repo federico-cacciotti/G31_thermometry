@@ -1,9 +1,0 @@
-README.md
-pyproject.toml
-src/test_code.py
-src/G31_thermometry/G31_thermometry.py
-src/G31_thermometry/__init__.py
-src/G31_thermometry.egg-info/PKG-INFO
-src/G31_thermometry.egg-info/SOURCES.txt
-src/G31_thermometry.egg-info/dependency_links.txt
-src/G31_thermometry.egg-info/top_level.txt

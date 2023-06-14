@@ -1,2 +1,0 @@
-G31_thermometry
-test_code
