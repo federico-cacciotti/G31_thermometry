@@ -9,10 +9,10 @@ class Diode():
         
         if serial_no != None:
             self.serial_no = Path(serial_no)
-            path_to_calibration = Path(__file__).parent.absolute() / self.model / self.serial_no
+            path_to_calibration = Path(__file__).parent / self.model / self.serial_no
         else:
             self.serial_no = None
-            path_to_calibration = Path(__file__).parent.absolute() / self.model
+            path_to_calibration = Path(__file__).parent / self.model
         
         print("Searching thermometer data at", path_to_calibration)
         
